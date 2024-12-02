@@ -1,21 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Asistencia</title>
+    <title>Sistema de Asistencia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            background-color: #f1f1f1;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #ddd;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            transition: background-color 0.3s ease;
+        }
+        .tab:hover {
+            background-color: #ccc;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 0 5px 5px;
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <section>
-            
-        </section>
-    </header>
-    <div>
-        <h2>HELLO NEW YERS</h2>
-    </div>
-    <footer>
 
-    </footer>
+    <h1>Sistema de Asistencia</h1>
+
+    <div class="tabs">
+        <button class="tab active" data-tab="asistencia">Asistencia</button>
+        <button class="tab" data-tab="registrar">Registrar</button>
+        <button class="tab" data-tab="empleados">Empleados</button>
+        <button class="tab" data-tab="reportes">Reportes</button>
+    </div>
+
+    <div class="tab-content active" id="asistencia">
+        <h2>Registrar Asistencia</h2>
+        <form action="/asistencia" method="post" id="asistenciaForm">
+            <label for="codigo_empleado">Código de Empleado:</label>
+            <input type="text" id="codigo_empleado" name="codigo_empleado" required><br><br>
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required><br><br>
+            <label for="hora_entrada">Hora de Entrada:</label>
+            <input type="time" id="hora_entrada" name="hora_entrada" required><br><br>
+            <label for="hora_salida">Hora de Salida:</label>
+            <input type="time" id="hora_salida" name="hora_salida"><br><br>
+            <button type="button" onclick="iniciarEscaneo()">Escanear Código de Empleado</button><br>
+            <button type="submit">Registrar Asistencia</button>
+        </form>
+        <p id="mensaje"></p>
+    </div>
+
+    <div class="tab-content" id="registrar">
+        <h2>Registrar Nuevo Empleado</h2>
+    <form method="POST" action="/registrar">
+        <label for="codigo_empleado">Código de Empleado:</label><br>
+        <input type="text" id="codigo_empleado" name="codigo_empleado" required><br><br>
+
+        <label for="nombre">Nombre:</label><br>
+        <input type="text" id="nombre" name="nombre" required><br><br>
+
+        <label for="apellido">Apellido:</label><br>
+        <input type="text" id="apellido" name="apellido" required><br><br>
+
+        <label for="dni">DNI:</label><br>
+        <input type="text" id="dni" name="dni" required><br><br>
+
+        <label for="fecha_ingreso">Fecha de Ingreso:</label><br>
+        <input type="date" id="fecha_ingreso" name="fecha_ingreso" required><br><br>
+
+        <label for="cargo">Cargo:</label><br>
+        <input type="text" id="cargo" name="cargo" required><br><br>
+
+        <label for="estado">Estado:</label><br>
+        <select id="estado" name="estado">
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+        </select><br><br>
+
+        <input type="submit" value="Registrar Empleado">
+    </form>
+
+    </div>
+
+    <div class="tab-content" id="empleados">
+        <h2>Lista de Empleados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Cargo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se deben mostrar los empleados -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="tab-content" id="reportes">
+        <h2>Generar Reportes</h2>
+        <form action="/reportes" method="get">
+            <label for="fecha_inicio">Fecha de Inicio:</label>
+            <input type="date" id="fecha_inicio" name="fecha_inicio" required><br><br>
+            <label for="fecha_fin">Fecha de Fin:</label>
+            <input type="date" id="fecha_fin" name="fecha_fin" required><br><br>
+            <button type="submit">Generar Reporte</button>
+        </form>
+    </div>
+
+    <script>
+        async function iniciarEscaneo() {
+            try {
+                // Hacer una solicitud para iniciar el escaneo de código
+                const response = await fetch('/iniciar-scanner', {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+                document.getElementById('codigo_empleado').value = data;
+            } catch (error) {
+                console.error('Error al iniciar el escaneo:', error);
+            }
+        }
+    </script>
+    <script>
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const targetTab = tab.getAttribute('data-tab');
+                tabContents.forEach(content => {
+                    if (content.id === targetTab) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+    
 </body>
 </html>
+
