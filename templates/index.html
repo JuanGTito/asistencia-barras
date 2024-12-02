@@ -102,10 +102,9 @@
 
         <input type="submit" value="Registrar Empleado">
     </form>
-
     </div>
 
-    <div class="tab-content" id="empleados">
+    <div class="tab-content" id="empleados" style="display: none;">
         <h2>Lista de Empleados</h2>
         <table>
             <thead>
@@ -117,10 +116,23 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Aquí se deben mostrar los empleados -->
+                {% if empleados %}
+                    {% for empleado in empleados %}
+                        <tr>
+                            <td>{{ empleado[0] }}</td>
+                            <td>{{ empleado[1] }}</td>
+                            <td>{{ empleado[2] }}</td>
+                            <td>{{ empleado[3] }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4">No hay empleados registrados.</td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
-    </div>
+    </div>    
 
     <div class="tab-content" id="reportes">
         <h2>Generar Reportes</h2>
@@ -168,6 +180,26 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const tabs = document.querySelectorAll(".tab");
+            const tabContents = document.querySelectorAll(".tab-content");
+    
+            tabs.forEach(tab => {
+                tab.addEventListener("click", () => {
+                    // Remover la clase 'active' de todas las pestañas y ocultar contenidos
+                    tabs.forEach(t => t.classList.remove("active"));
+                    tabContents.forEach(content => (content.style.display = "none"));
+    
+                    // Agregar la clase 'active' a la pestaña seleccionada y mostrar contenido
+                    tab.classList.add("active");
+                    const tabContentId = tab.getAttribute("data-tab");
+                    document.getElementById(tabContentId).style.display = "block";
+                });
+            });
+        });
+    </script>
+    
     
 </body>
 </html>

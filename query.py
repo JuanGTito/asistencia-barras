@@ -1,19 +1,25 @@
 from conexion import obtener_conexion
 from datetime import datetime
 
-# Consultas para la tabla "empleados"
-def insertar_empleado(codigo_empleado, nombre, apellido, dni, fecha_ingreso, cargo, estado='activo'):
-    conn = obtener_conexion()
-    cursor = conn.cursor()
-    query = '''
-        INSERT INTO empleados (codigo_empleado, nombre, apellido, dni, fecha_ingreso, cargo, estado)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-    '''
+def registrar_empleado(codigo_empleado, nombre, apellido, dni, fecha_ingreso, cargo, estado):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    # Consulta SQL para insertar el empleado en la base de datos
+    query = """
+    INSERT INTO empleados (codigo_empleado, nombre, apellido, dni, fecha_ingreso, cargo, estado)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    # Ejecutar la consulta con los datos proporcionados
     cursor.execute(query, (codigo_empleado, nombre, apellido, dni, fecha_ingreso, cargo, estado))
-    conn.commit()
+    
+    # Confirmar la transacción
+    conexion.commit()
+
+    # Cerrar la conexión
     cursor.close()
-    conn.close()
-    print("Empleado insertado correctamente.")
+    conexion.close()
 
 def actualizar_empleado(codigo_empleado, nombre=None, apellido=None, dni=None, cargo=None, estado=None):
     conn = obtener_conexion()
@@ -48,12 +54,22 @@ def actualizar_empleado(codigo_empleado, nombre=None, apellido=None, dni=None, c
     print("Empleado actualizado correctamente.")
 
 def obtener_empleados():
-    conn = obtener_conexion()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM empleados")
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+
+    # Consulta SQL para obtener todos los empleados
+    query = "SELECT codigo_empleado, nombre, apellido, cargo FROM empleados"
+    
+    # Ejecutar la consulta
+    cursor.execute(query)
+    
+    # Obtener todos los resultados
     empleados = cursor.fetchall()
+    
+    # Cerrar la conexión
     cursor.close()
-    conn.close()
+    conexion.close()
+    
     return empleados
 
 def eliminar_empleado(codigo_empleado):
